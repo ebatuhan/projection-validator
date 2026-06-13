@@ -234,10 +234,15 @@ It then visits each method in the projection interface, resolves the expected en
 
 - The processor checks entity fields directly. It does not inspect entity getter methods.
 - Field names must match projection method names after JavaBean accessor conversion.
+- Collection types are checked recursively by their generic element type.
+- The processor treats all `java.util.Collection` implementations the same, so `List<T>` and `Set<T>` are considered compatible when their element types match.
 - Raw collections or collections without generic type arguments are treated as invalid.
-- For generic collection types, the processor compares the last type argument.
+- Generic wrappers that are not `java.util.Collection`, such as `Optional<T>`, are not unwrapped.
 - The processor targets Java 21.
 
-## License
+## TODO
 
-No license file is currently included in the repository.
+- Validate `@JPAProjection` usage only on interfaces, not classes.
+- Handle default methods on projection interfaces.
+- Handle wildcard generic types, such as `List<? extends RoleProjection>`.
+- Add an annotation for ignoring selected projection methods during validation.
