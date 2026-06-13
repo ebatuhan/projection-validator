@@ -28,7 +28,7 @@ public class ProjectionVisitor extends ElementScanner14<Void, ValidationContext>
                 .findFirst();
 
         if (entityFieldElement.isEmpty()) {
-            validationContext.reporter().reportGetterMismatch(method);
+            validationContext.reporter().reportGetterNotFound(method, method.getEnclosingElement().asType(), validationContext.entity().asType());
             return null;
         }
 
@@ -36,7 +36,7 @@ public class ProjectionVisitor extends ElementScanner14<Void, ValidationContext>
         TypeMirror fieldType = entityFieldElement.get().asType();
 
         if (!compatible(methodType, fieldType, validationContext)) {
-            validationContext.reporter().reportTypeMismatch(methodType, fieldType);
+            validationContext.reporter().reportTypeMismatch(fieldType, methodType, method.getEnclosingElement().asType(), validationContext.entity().asType());
         }
 
         return super.visitExecutable(method, validationContext);

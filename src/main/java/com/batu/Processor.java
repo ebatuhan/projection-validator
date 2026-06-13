@@ -17,7 +17,7 @@ import com.batu.util.Reporter;
 import com.batu.util.ValueExtractor;
 import com.batu.visitor.ProjectionVisitor;
 
-@SupportedAnnotationTypes("com.batu.JPAProjection")
+@SupportedAnnotationTypes("com.batu.api.JPAProjection")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class Processor extends AbstractProcessor {
 
