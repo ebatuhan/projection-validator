@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementScanner14;
@@ -17,6 +18,11 @@ public class ProjectionVisitor extends ElementScanner14<Void, ValidationContext>
 
     @Override
     public Void visitExecutable(ExecutableElement method, ValidationContext validationContext) {
+        if (method.getModifiers().contains(Modifier.DEFAULT)
+                || method.getModifiers().contains(Modifier.STATIC)) {
+            return null;
+        }
+
         String methodName = method.getSimpleName().toString();
 
         Optional<? extends Element> entityFieldElement = validationContext.entity()
@@ -28,7 +34,11 @@ public class ProjectionVisitor extends ElementScanner14<Void, ValidationContext>
                 .findFirst();
 
         if (entityFieldElement.isEmpty()) {
-            validationContext.reporter().reportGetterNotFound(method, method.getEnclosingElement().asType(), validationContext.entity().asType());
+            validationContext.reporter().reportGetterNotFound(
+                    method,
+                    method.getEnclosingElement().asType(),
+                    validationContext.entity().asType()
+            );
             return null;
         }
 
@@ -36,7 +46,13 @@ public class ProjectionVisitor extends ElementScanner14<Void, ValidationContext>
         TypeMirror fieldType = entityFieldElement.get().asType();
 
         if (!compatible(methodType, fieldType, validationContext)) {
-            validationContext.reporter().reportTypeMismatch(fieldType, methodType, method.getEnclosingElement().asType(), validationContext.entity().asType());
+            validationContext.reporter().reportTypeMismatch(
+                    method,
+                    fieldType,
+                    methodType,
+                    method.getEnclosingElement().asType(),
+                    validationContext.entity().asType()
+            );
         }
 
         return super.visitExecutable(method, validationContext);
@@ -69,7 +85,8 @@ public class ProjectionVisitor extends ElementScanner14<Void, ValidationContext>
                 .getTypeUtils()
                 .asElement(methodType);
 
-        if (methodTypeElement != null && methodTypeElement.getAnnotation(JPAProjection.class) != null) {
+        if (methodTypeElement != null
+                && methodTypeElement.getAnnotation(JPAProjection.class) != null) {
             methodType = ValueExtractor.asTypeMirror(methodTypeElement);
         }
 
