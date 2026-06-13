@@ -242,7 +242,7 @@ It then visits each method in the projection interface, resolves the expected en
 
 ## TODO
 
-- Validate `@JPAProjection` usage only on interfaces, not classes.
-- Handle default methods on projection interfaces.
-- Handle wildcard generic types, such as `List<? extends RoleProjection>`.
-- Add an annotation for ignoring selected projection methods during validation.
+- [x] Validate `@JPAProjection` usage only on interfaces, not classes.
+- [x] Handle default methods on projection interfaces.
+- [ ] Handle wildcard generic types, such as `List<? extends RoleProjection>`.
+- [ ] Add an annotation for ignoring selected projection methods during validation.
